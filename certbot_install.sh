@@ -1,0 +1,82 @@
+#!/bin/bash
+################################################################################
+# Script for installing Nginx and Certbot on Ubuntu 16.04, 18.04 and 20.04 (could be used for other version too)
+# Author: Sumit Khanna
+#-------------------------------------------------------------------------------
+# This script will install Docker compose on your Ubuntu server.
+#-------------------------------------------------------------------------------
+# Make a new file:
+# sudo nano certbot_install.sh
+# Place this content in it and then make the file executable:
+# sudo chmod +x certbot_install.sh
+# Execute the script to install docker:
+# ./certbot_install
+################################################################################
+
+# VARIABLES
+INSTALL_NGINX="y"
+ENABLE_SSL="y"
+ADMIN_EMAIL="test@example.com"
+WEBSITE_NAME="_"
+
+#--------------------------------------------------
+# Update Server
+#--------------------------------------------------
+echo -e "\n---- Update Server ----"
+# universe package is for Ubuntu 18.x
+sudo add-apt-repository universe
+sudo add-apt-repository "deb http://mirrors.kernel.org/ubuntu/ xenial main"
+sudo apt-get update
+sudo apt-get upgrade -y
+
+#--------------------------------------------------
+# Install Nginx if needed
+#--------------------------------------------------
+echo "Do you want to install nginx(Default Yes):(y or n)"
+read INSTALL_NGINX
+echo "Please enter website name"
+read WEBSITE_NAME
+
+if [ $INSTALL_NGINX = "y" ] || [ $INSTALL_NGINX = "Y" ] && [ $WEBSITE_NAME != "_" ];then
+  echo -e "\n---- Installing and setting up Nginx ----"
+  sudo apt install nginx -y
+else
+  echo "Nginx isn't installed due to choice of the user or because of a misconfiguration!"
+fi
+
+
+#--------------------------------------------------
+# Enable ssl with certbot
+#--------------------------------------------------
+echo "Do you want to Enable SSL (Default Yes):(y or n)"
+read ENABLE_SSL
+if [ $ENABLE_SSL = "y" ] || [ $INSTALL_NGINX = "Y" ];then
+  echo "Please enter Email"
+  read ADMIN_EMAIL
+  if [ $ADMIN_EMAIL != "test@example.com" ] && [ $WEBSITE_NAME != "_" ]; then
+      sudo add-apt-repository ppa:certbot/certbot -y && sudo apt-get update -y
+      sudo apt-get install python3-certbot-nginx -y
+      sudo certbot --nginx -d $WEBSITE_NAME --noninteractive --agree-tos --email $ADMIN_EMAIL --redirect
+      sudo service nginx reload
+      echo "SSL/HTTPS is enabled!"
+  else
+    echo "SSL/HTTPS isn't enabled due to invalid email or website name"
+  fi
+else
+  echo "SSL/HTTPS isn't enabled due to choice of the user or because of a misconfiguration!"
+fi
+
+
+echo "-----------------------------------------------------------"
+if [ $INSTALL_NGINX = "y" ] || [ $INSTALL_NGINX = "Y" ]; then
+  echo "Done! The Nginx is up and running."
+  echo "Start Nginx service: sudo service nginx start"
+  echo "Stop Nginx service: sudo service nginx stop"
+  echo "Restart Nginx service: sudo service nginx restart"
+  echo "Check Nginx service status: sudo service nginx status"
+fi
+if [ $WEBSITE_NAME != "_" ]; then
+  echo "Nginx configuration file: /etc/nginx/sites-available/$WEBSITE_NAME"
+  echo "Check SSL Auto-renew: sudo certbot renew --dry-run"
+fi
+echo "-----------------------------------------------------------"
