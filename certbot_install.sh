@@ -22,7 +22,7 @@ WEBSITE_NAME="_"
 #--------------------------------------------------
 # Update Server
 #--------------------------------------------------
-echo -e "\n---- Update Server ----"
+echo -e "---- Update Server ----"
 # universe package is for Ubuntu 18.x
 sudo add-apt-repository universe
 sudo add-apt-repository "deb http://mirrors.kernel.org/ubuntu/ xenial main"
