@@ -32,25 +32,75 @@ sudo apt-get upgrade -y
 #--------------------------------------------------
 # Install Nginx if needed
 #--------------------------------------------------
-echo "Do you want to install nginx(Default Yes):(y or n)"
+echo "Do you want to install nginx (y/n)"
 read INSTALL_NGINX
 echo "Please enter website name"
 read WEBSITE_NAME
 
-if [ $INSTALL_NGINX = "y" ] || [ $INSTALL_NGINX = "Y" ] && [ $WEBSITE_NAME != "_" ];then
-  echo -e "\n---- Installing and setting up Nginx ----"
+if [[ $INSTALL_NGINX == [yY] ]] && [[ $WEBSITE_NAME != "_" ]]; then
+  echo -e "\n---- Installing Nginx ----"
+  INSTALL_NGINX="y"
   sudo apt install nginx -y
 else
   echo "Nginx isn't installed due to choice of the user or because of a misconfiguration!"
 fi
 
+if [[ $INSTALL_NGINX == [yY] ]]; then
+    echo -e "\n---- Setting up Nginx ----"
+    cat <<EOF > ~/odoo
+server {
+  listen 80;
+
+  # set proper server name after domain set
+  server_name $WEBSITE_NAME;
+
+  #   odoo    log files
+  access_log  /var/log/nginx/access.log;
+  error_log       /var/log/nginx/error.log;
+
+  #   increase    proxy   buffer  size
+  proxy_buffers   16  64k;
+  proxy_buffer_size   128k;
+
+  proxy_read_timeout 900s;
+  proxy_connect_timeout 900s;
+  proxy_send_timeout 900s;
+
+  #   force   timeouts    if  the backend dies
+  proxy_next_upstream error   timeout invalid_header  http_500    http_502
+  http_503;
+
+  #   enable  data    compression
+  gzip    on;
+  gzip_min_length 1100;
+  gzip_buffers    4   32k;
+  gzip_types  text/css text/less text/plain text/xml application/xml application/json application/javascript application/pdf image/jpeg image/png;
+  gzip_vary   on;
+  client_header_buffer_size 4k;
+  large_client_header_buffers 4 64k;
+  client_max_body_size 0;
+
+  location / {
+    proxy_pass    http://127.0.0.1:$OE_PORT;
+    # by default, do not forward anything
+    proxy_redirect off;
+  }
+}
+EOF
+
+  sudo mv ~/odoo /etc/nginx/sites-available/$WEBSITE_NAME
+  sudo ln -s /etc/nginx/sites-available/$WEBSITE_NAME /etc/nginx/sites-enabled/$WEBSITE_NAME
+  sudo rm /etc/nginx/sites-enabled/default
+  sudo service nginx reload
+  sudo su root -c "printf 'proxy_mode = True\n' >> /etc/${OE_CONFIG}.conf"
+fi
 
 #--------------------------------------------------
 # Enable ssl with certbot
 #--------------------------------------------------
-echo "Do you want to Enable SSL (Default Yes):(y or n)"
+echo "Do you want to Enable SSL (Default Yes): (y/n)"
 read ENABLE_SSL
-if [ $ENABLE_SSL = "y" ] || [ $INSTALL_NGINX = "Y" ];then
+if [[ $ENABLE_SSL == [yY] ]];then
   echo "Please enter Email"
   read ADMIN_EMAIL
   if [ $ADMIN_EMAIL != "test@example.com" ] && [ $WEBSITE_NAME != "_" ]; then
@@ -68,7 +118,7 @@ fi
 
 
 echo "-----------------------------------------------------------"
-if [ $INSTALL_NGINX = "y" ] || [ $INSTALL_NGINX = "Y" ]; then
+if [[ $INSTALL_NGINX == [yY] ]]; then
   echo "Done! The Nginx is up and running."
   echo "Start Nginx service: sudo service nginx start"
   echo "Stop Nginx service: sudo service nginx stop"
