@@ -18,11 +18,12 @@ INSTALL_NGINX="y"
 ENABLE_SSL="y"
 ADMIN_EMAIL="test@example.com"
 WEBSITE_NAME="_"
+OE_PORT="80"
 
 #--------------------------------------------------
 # Update Server
 #--------------------------------------------------
-echo -e "---- Update Server ----"
+echo -e "\n---- Update Server ----"
 # universe package is for Ubuntu 18.x
 sudo add-apt-repository universe
 sudo add-apt-repository "deb http://mirrors.kernel.org/ubuntu/ xenial main"
@@ -46,6 +47,8 @@ else
 fi
 
 if [[ $INSTALL_NGINX == [yY] ]]; then
+    echo -e "\n---- Please Enter Port ----"
+    read OE_PORT
     echo -e "\n---- Setting up Nginx ----"
     cat <<EOF > ~/odoo
 server {
