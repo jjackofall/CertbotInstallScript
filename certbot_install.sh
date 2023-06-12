@@ -32,7 +32,7 @@ sudo apt-get upgrade -y
 #--------------------------------------------------
 # Install Nginx if needed
 #--------------------------------------------------
-echo "Do you want to install nginx (y/n)"
+echo -e "Do you want to install nginx (y/n)"
 read INSTALL_NGINX
 echo "Please enter website name"
 read WEBSITE_NAME
@@ -42,7 +42,7 @@ if [[ $INSTALL_NGINX == [yY] ]] && [[ $WEBSITE_NAME != "_" ]]; then
   INSTALL_NGINX="y"
   sudo apt install nginx -y
 else
-  echo "Nginx isn't installed due to choice of the user or because of a misconfiguration!"
+  echo -e  "Nginx isn't installed due to choice of the user or because of a misconfiguration!"
 fi
 
 if [[ $INSTALL_NGINX == [yY] ]]; then
