@@ -5,7 +5,8 @@ Nginx and Certbot Install Script for Ubuntu
 
 ##### 1. Download the script:
 ```
-sudo wget https://raw.githubusercontent.com/jjackofall/CertbotInstallScript/main/certbot_install.sh
+sudo wget sudo wget https://github.com/jjackofall/CertbotInstallScript/blob/main/certbot_install.sh
+
 ```
 
 #### 2. Make the script executable
