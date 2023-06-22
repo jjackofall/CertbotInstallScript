@@ -1,9 +1,9 @@
 #!/bin/bash
 ################################################################################
-# Script for installing Nginx and Certbot on Ubuntu 16.04, 18.04 and 20.04 (could be used for other version too)
+# Script for installing Nginx and Certbot on Ubuntu 16.04, 18.04, and 20.04 (could be used for another version too)
 # Author: Sumit Khanna
 #-------------------------------------------------------------------------------
-# This script will install Docker compose on your Ubuntu server.
+# This script will install Nginx & Certbot on your Ubuntu server.
 #-------------------------------------------------------------------------------
 # Make a new file:
 # sudo nano certbot_install.sh
@@ -43,7 +43,7 @@ if [[ $INSTALL_NGINX == [yY] ]] && [[ $WEBSITE_NAME != "_" ]]; then
   INSTALL_NGINX="y"
   sudo apt install nginx -y
 else
-  echo -e  "Nginx isn't installed due to choice of the user or because of a misconfiguration!"
+  echo -e  "Nginx isn't installed due to the user's choice or misconfiguration!"
 fi
 
 if [[ $INSTALL_NGINX == [yY] ]]; then
@@ -116,7 +116,7 @@ if [[ $ENABLE_SSL == [yY] ]];then
     echo "SSL/HTTPS isn't enabled due to invalid email or website name"
   fi
 else
-  echo "SSL/HTTPS isn't enabled due to choice of the user or because of a misconfiguration!"
+  echo "SSL/HTTPS isn't enabled due to the user's choice or misconfiguration!"
 fi
 
 
