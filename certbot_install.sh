@@ -47,6 +47,15 @@ else
 fi
 
 if [[ $INSTALL_NGINX == [yY] ]]; then
+    # Remove Nginx and Certbot
+    sudo systemctl stop nginx
+    sudo apt-get remove --purge nginx
+    sudo apt-get remove --purge certbot
+    sudo rm -rf /etc/letsencrypt
+    sudo rm -rf /etc/nginx
+    sudo rm -rf /var/log/nginx
+    sudo rm -rf /var/www/html
+
     echo -e "\n---- Please Enter Port ----"
     read OE_PORT
     echo -e "\n---- Setting up Nginx ----"
